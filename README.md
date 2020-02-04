@@ -14,7 +14,6 @@ Please make sure to update the tests as appropriate.
 
 ## Credits
 [AppSoftware](https://github.com/appsoftwareltd/dotnet-licence-key-generator) for the original License Generator.
-
 [MahApps.Metro](https://github.com/MahApps/MahApps.Metro) for the UI Look and Feel.
 
 ## License
