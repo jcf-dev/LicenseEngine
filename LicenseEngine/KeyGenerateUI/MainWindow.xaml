@@ -7,7 +7,6 @@
                       xmlns:local="clr-namespace:KeyGenerateUI"
                       xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
                       BorderBrush="{DynamicResource AccentColorBrush}"
-                      BorderThickness="1"
                       mc:Ignorable="d"
                       Title="License Engine - Key Generator and Verifier"
                       Height="400"
