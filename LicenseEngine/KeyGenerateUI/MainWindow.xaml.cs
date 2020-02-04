@@ -15,14 +15,11 @@ namespace KeyGenerateUI
             InitializeComponent();
         }
 
-        private void btnGenerate_Click(object sender, RoutedEventArgs e)
+        private void BtnGenerate_Click(object sender, RoutedEventArgs e)
         {
-            if (int.TryParse(txtProdID.Text, out var ID))
-                txtLicense.Text = GenerateKey(ID);
-            else
-                txtLicense.Text = "ERROR: Product ID must be an integer.";
+            TxtLicense.Text = int.TryParse(TxtProdID.Text, out var ID) ? GenerateKey(ID) : "ERROR: Product ID must be an integer.";
         }
-
+            
         private string GenerateKey(int ID)
         {
             var keyGenerator = new KeyGenerator();
@@ -43,10 +40,15 @@ namespace KeyGenerateUI
             return key;
         }
 
-        private void btnReset_Click(object sender, RoutedEventArgs e)
+        private void BtnReset_Click(object sender, RoutedEventArgs e)
         {
-            txtLicense.Text = "";
-            txtProdID.Text = "";
+            TxtLicense.Text = "";
+            TxtProdID.Text = "";
+        }
+
+        private void BtnHelp_OnClick(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/joweenflores/LicenseEngine");
         }
     }
 }

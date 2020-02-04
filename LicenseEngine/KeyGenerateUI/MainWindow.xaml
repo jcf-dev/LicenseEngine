@@ -17,7 +17,8 @@
 
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
-            <Button>
+            <Button x:Name="BtnHelp"
+                    Click="BtnHelp_OnClick">
                 <StackPanel Orientation="Horizontal">
                     <iconPacks:PackIconModern Width="15"
                                               Height="15"
@@ -63,7 +64,7 @@
                            FontSize="12px"
                            Grid.Row="0"
                            Grid.Column="1" />
-                <TextBox x:Name="txtProdID"
+                <TextBox x:Name="TxtProdID"
                          Margin="5 10"
                          AcceptsReturn="False"
                          Padding="5"
@@ -71,7 +72,7 @@
                          Grid.Row="1"
                          Grid.Column="0"
                          TabIndex="0" />
-                <TextBox x:Name="txtLicense"
+                <TextBox x:Name="TxtLicense"
                          Grid.Column="1"
                          Grid.Row="1"
                          Margin="5 10"
@@ -89,20 +90,20 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Button x:Name="btnGenerate"
+                <Button x:Name="BtnGenerate"
                         Grid.Column="2"
                         Content="Generate"
                         Margin="5"
                         FontSize="12px"
-                        Click="btnGenerate_Click"
+                        Click="BtnGenerate_Click"
                         TabIndex="1" />
-                <Button x:Name="btnReset"
+                <Button x:Name="BtnReset"
                         Grid.Column="3"
                         Content="Reset"
                         Margin="5"
                         FontSize="12px"
                         TabIndex="2"
-                        Click="btnReset_Click" />
+                        Click="BtnReset_Click" />
             </Grid>
         </StackPanel>
     </Grid>
