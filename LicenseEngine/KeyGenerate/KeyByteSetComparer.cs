@@ -1,6 +1,5 @@
-﻿using KeyCommon;
-using System.Collections;
-
+﻿using System.Collections;
+using KeyCommon;
 
 namespace KeyGenerate
 {
@@ -8,18 +7,12 @@ namespace KeyGenerate
     {
         public int Compare(object x, object y)
         {
-            KeyByteSet kbs1 = (KeyByteSet) x;
-            KeyByteSet kbs2 = (KeyByteSet) y;
+            var kbs1 = (KeyByteSet) x;
+            var kbs2 = (KeyByteSet) y;
 
-            if (kbs1.KeyByteNo > kbs2.KeyByteNo)
-            {
-                return 1;
-            }
+            if (kbs1.KeyByteNo > kbs2.KeyByteNo) return 1;
 
-            if (kbs1.KeyByteNo < kbs2.KeyByteNo)
-            {
-                return -1;
-            }
+            if (kbs1.KeyByteNo < kbs2.KeyByteNo) return -1;
 
             return 0;
         }

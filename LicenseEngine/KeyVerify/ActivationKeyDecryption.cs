@@ -1,13 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace KeyVerify
 {
     internal class ActivationKeyDecryption
     {
         /// <summary>
-        /// Decrypt a string into a string using a custom password. Uses Decrypt(byte[], byte[], byte[]) </summary>
+        ///     Decrypt a string into a string using a custom password. Uses Decrypt(byte[], byte[], byte[])
+        /// </summary>
         /// <param name="cipherText"></param>
         /// <param name="password"></param>
         /// <returns></returns>
@@ -16,15 +18,15 @@ namespace KeyVerify
             // First we need to turn the input string into a byte array. 
             // We presume that Base64 encoding was used 
 
-            byte[] cipherBytes = Convert.FromBase64String(cipherText);
+            var cipherBytes = Convert.FromBase64String(cipherText);
 
             // Then, we need to turn the password into Key and IV 
             // We are using salt to make it harder to guess our key
             // using a dictionary attack - 
             // trying to guess a password by enumerating all possible words. 
 
-            PasswordDeriveBytes pdb = new PasswordDeriveBytes(password,
-                new byte[] { 0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76 });
+            var pdb = new PasswordDeriveBytes(password,
+                new byte[] {0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76});
 
             // Now get the key/IV and do the decryption using
             // the function that accepts byte arrays. 
@@ -39,7 +41,7 @@ namespace KeyVerify
             // You can also read KeySize/BlockSize properties off
             // the algorithm to find out the sizes. 
 
-            byte[] decryptedData = Decrypt(cipherBytes,
+            var decryptedData = Decrypt(cipherBytes,
                 pdb.GetBytes(32), pdb.GetBytes(16));
 
             // Now we need to turn the resulting byte array into a string. 
@@ -49,11 +51,11 @@ namespace KeyVerify
             // We are going to be using Base64 encoding that is 
             // designed exactly for what we are trying to do. 
 
-            return System.Text.Encoding.Unicode.GetString(decryptedData);
+            return Encoding.Unicode.GetString(decryptedData);
         }
 
         /// <summary>
-        /// Decrypt a byte array into a byte array using a key and an IV 
+        ///     Decrypt a byte array into a byte array using a key and an IV
         /// </summary>
         /// <param name="cipherData"></param>
         /// <param name="key"></param>
@@ -64,7 +66,7 @@ namespace KeyVerify
             // Create a MemoryStream that is going to accept the
             // decrypted bytes 
 
-            MemoryStream ms = new MemoryStream();
+            var ms = new MemoryStream();
 
             // Create a symmetric algorithm. 
             // We are going to use Rijndael because it is strong and
@@ -73,7 +75,7 @@ namespace KeyVerify
             // line with something like 
             //     TripleDES alg = TripleDES.Create(); 
 
-            Rijndael alg = Rijndael.Create();
+            var alg = Rijndael.Create();
 
             // Now set the key and the IV. 
             // We need the IV (Initialization Vector) because the algorithm
@@ -96,7 +98,7 @@ namespace KeyVerify
             // and the output will be written in the MemoryStream
             // we have provided. 
 
-            CryptoStream cs = new CryptoStream(ms,
+            var cs = new CryptoStream(ms,
                 alg.CreateDecryptor(), CryptoStreamMode.Write);
 
             // Write the data and make it do the decryption 
@@ -115,7 +117,7 @@ namespace KeyVerify
             // Some people make a mistake of using GetBuffer() here,
             // which is not the right way. 
 
-            byte[] decryptedData = ms.ToArray();
+            var decryptedData = ms.ToArray();
 
             return decryptedData;
         }

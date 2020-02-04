@@ -8,17 +8,18 @@
 #undef Key08
 
 using System;
+using System.Globalization;
 using KeyCommon;
 
 namespace KeyVerify
 {
     /// <summary>
-    /// Provides methods for verifying a licence key.
+    ///     Provides methods for verifying a licence key.
     /// </summary>
     public class KeyCheck
     {
         /// <summary>
-        /// Check a given key for validity
+        ///     Check a given key for validity
         /// </summary>
         /// <param name="key">The full key</param>
         /// <param name="keyByteSetsToCheck">The KeyBytes that are to be tested in this check</param>
@@ -34,14 +35,13 @@ namespace KeyVerify
         {
             key = FormatKeyForCompare(key);
 
-            LicenceKeyResult result = LicenceKeyResult.KeyInvalid;
+            var result = LicenceKeyResult.KeyInvalid;
 
-            bool checksumPass = CheckKeyChecksum(key, totalKeyByteSets);
+            var checksumPass = CheckKeyChecksum(key, totalKeyByteSets);
 
             if (checksumPass)
             {
                 if (blackListedSeeds != null && blackListedSeeds.Length > 0)
-                {
                     // Test key against our black list
 
                     // Example black listed seed: 111111 (Hex val). Producing keys with the same 
@@ -49,14 +49,9 @@ namespace KeyVerify
                     // can provide a mechanism for tracking the source of any keys that are found to
                     // be used out of licence terms.
 
-                    for (int i = 0; i < blackListedSeeds.Length; i++)
-                    {
+                    for (var i = 0; i < blackListedSeeds.Length; i++)
                         if (key.StartsWith(blackListedSeeds[i]))
-                        {
                             result = LicenceKeyResult.KeyBlackListed;
-                        }
-                    }
-                }
 
                 if (result != LicenceKeyResult.KeyBlackListed)
                 {
@@ -81,7 +76,7 @@ namespace KeyVerify
 
                     int seed;
 
-                    bool seedParsed = int.TryParse(key.Substring(0, 8), System.Globalization.NumberStyles.HexNumber, null, out seed);
+                    var seedParsed = int.TryParse(key.Substring(0, 8), NumberStyles.HexNumber, null, out seed);
 
                     if (seedParsed)
                     {
@@ -101,20 +96,17 @@ namespace KeyVerify
                             keySubstringStart = GetKeySubstringStart(keyByteSet.KeyByteNo);
 
                             if (keySubstringStart - 1 > key.Length)
-                            {
-                                throw new InvalidOperationException("The KeyByte check position is out of range. You may have specified a check KeyByteNo that did not exist in the original key generation.");
-                            }
+                                throw new InvalidOperationException(
+                                    "The KeyByte check position is out of range. You may have specified a check KeyByteNo that did not exist in the original key generation.");
 
                             keyBytes = key.Substring(keySubstringStart, 2);
                             b = GetKeyByte(seed, keyByteSet.KeyByteA, keyByteSet.KeyByteB, keyByteSet.KeyByteC);
 
                             if (keyBytes != b.ToString("X2"))
-                            {
                                 // If true, then it means the key is either good, or was made
                                 // with a keygen derived from "this" release.
 
                                 return result; // Return result in failed state 
-                            }
                         }
 
                         result = LicenceKeyResult.KeyGood;
@@ -126,34 +118,35 @@ namespace KeyVerify
         }
 
         /// <summary>
-        /// Short hand way of creating pattern 8, 10, 12, 14
+        ///     Short hand way of creating pattern 8, 10, 12, 14
         /// </summary>
         /// <param name="keyByteNo"></param>
         /// <returns></returns>
         private int GetKeySubstringStart(int keyByteNo)
         {
-            return (keyByteNo * 2) + 6;
+            return keyByteNo * 2 + 6;
         }
 
         /// <summary>
-        /// Indicate if the check sum portion of the key is valid
+        ///     Indicate if the check sum portion of the key is valid
         /// </summary>
         /// <param name="key"></param>
         /// <param name="totalKeyByteSets"> </param>
         /// <returns></returns>
         public bool CheckKeyChecksum(string key, int totalKeyByteSets)
         {
-            bool result = false;
+            var result = false;
 
-            string formattedKey = FormatKeyForCompare(key);
+            var formattedKey = FormatKeyForCompare(key);
 
-            if (formattedKey.Length == (8 + 4 + (2 * totalKeyByteSets))) // First 8 are seed, 4 for check sum, plus 2 for each KeyByte
+            if (formattedKey.Length == 8 + 4 + 2 * totalKeyByteSets
+            ) // First 8 are seed, 4 for check sum, plus 2 for each KeyByte
             {
-                int keyLessChecksumLength = formattedKey.Length - 4;
+                var keyLessChecksumLength = formattedKey.Length - 4;
 
-                string checkSum = formattedKey.Substring(keyLessChecksumLength, 4); // Last 4 chars are checksum
+                var checkSum = formattedKey.Substring(keyLessChecksumLength, 4); // Last 4 chars are checksum
 
-                string keyWithoutChecksum = formattedKey.Substring(0, keyLessChecksumLength);
+                var keyWithoutChecksum = formattedKey.Substring(0, keyLessChecksumLength);
 
                 result = GetChecksum(keyWithoutChecksum) == checkSum;
             }
@@ -167,52 +160,45 @@ namespace KeyVerify
         ////////////////////////////////////////////////////
 
         /// <summary>
-        /// Strip padding chars for comparison
+        ///     Strip padding chars for comparison
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
         private static string FormatKeyForCompare(string key)
         {
-            if (key == null)
-            {
-                key = String.Empty;
-            }
+            if (key == null) key = string.Empty;
 
             // Replace -, space etc, upper case
 
-            return key.Trim().ToUpper().Replace("-", String.Empty).Replace(" ", String.Empty);
+            return key.Trim().ToUpper().Replace("-", string.Empty).Replace(" ", string.Empty);
         }
 
         /// <summary>
-        /// Given a seed and some input bytes, generate a single byte to return. This should 
-        /// be used with randomised data, that can be represented to retrieve the same key.
+        ///     Given a seed and some input bytes, generate a single byte to return. This should
+        ///     be used with randomised data, that can be represented to retrieve the same key.
         /// </summary>
         /// <param name="seed"></param>
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <param name="c"></param>
         /// <returns></returns>
-        private byte GetKeyByte(Int64 seed, byte a, byte b, byte c)
+        private byte GetKeyByte(long seed, byte a, byte b, byte c)
         {
-            int aTemp = a % 25;
-            int bTemp = b % 3;
+            var aTemp = a % 25;
+            var bTemp = b % 3;
 
             long result;
 
-            if ((a % 2) == 0)
-            {
+            if (a % 2 == 0)
                 result = ((seed >> aTemp) & 0xFF) ^ ((seed >> bTemp) | c);
-            }
             else
-            {
                 result = ((seed >> aTemp) & 0xFF) ^ ((seed >> bTemp) & c);
-            }
 
-            return (byte)result;
+            return (byte) result;
         }
 
         /// <summary>
-        /// Generate a new checksum for a key
+        ///     Generate a new checksum for a key
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
@@ -222,28 +208,20 @@ namespace KeyVerify
             ushort right = 0xAF;
 
             if (str.Length > 0)
-            {
                 // 0xFF hex for 255
 
-                for (int cnt = 0; cnt < str.Length; cnt++)
+                for (var cnt = 0; cnt < str.Length; cnt++)
                 {
-                    right = (ushort)(right + Convert.ToByte(str[cnt]));
+                    right = (ushort) (right + Convert.ToByte(str[cnt]));
 
-                    if (right > 0xFF)
-                    {
-                        right -= 0xFF;
-                    }
+                    if (right > 0xFF) right -= 0xFF;
 
                     left += right;
 
-                    if (left > 0xFF)
-                    {
-                        left -= 0xFF;
-                    }
+                    if (left > 0xFF) left -= 0xFF;
                 }
-            }
 
-            ushort sum = (ushort)((left << 8) + right);
+            var sum = (ushort) ((left << 8) + right);
 
             return sum.ToString("X4"); // 4 char hex
         }

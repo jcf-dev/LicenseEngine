@@ -10,9 +10,9 @@
             KeyByteC = keyByteC;
         }
 
-        public int KeyByteNo { get; private set; }
-        public byte KeyByteA { get; private set; }
-        public byte KeyByteB { get; private set; }
-        public byte KeyByteC { get; private set; }
+        public int KeyByteNo { get; }
+        public byte KeyByteA { get; }
+        public byte KeyByteB { get; }
+        public byte KeyByteC { get; }
     }
 }

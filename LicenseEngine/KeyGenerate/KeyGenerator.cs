@@ -23,103 +23,7 @@ namespace KeyGenerate
     public class KeyGenerator
     {
         /// <summary>
-        /// Generate a new key given a seed value. This seed should be unique so that where licences are blacklisted, 
-        /// we only blacklist one key. Store the seed when generating new licences, or put in place some other mechanism so that
-        /// the key will not be repeated for the same application. This seed does not necessarily have to be randomised.
-        /// </summary>
-        /// <param name="seed">Random number</param>
-        /// <param name="keyByteSets">A list of key bytes that will be used to produce the key</param>
-        /// <returns></returns>
-        public string MakeKey(int seed, KeyByteSet[] keyByteSets)
-        {
-            if (keyByteSets.Length < 2)
-            {
-                throw new InvalidOperationException("The KeyByteSet array must be of length 2 or greater.");
-            }
-
-            // Check that array is in correct order as this will cause errors if passed in incorrectly
-
-            Array.Sort(keyByteSets, new KeyByteSetComparer());
-
-            bool allKeyByteNosDistinct = true;
-
-            var keyByteCheckedNos = new List<int>();
-
-            int maxKeyByteNo = 0;
-
-            foreach (var keyByteSet in keyByteSets)
-            {
-                if (!(keyByteCheckedNos.Contains(keyByteSet.KeyByteNo)))
-                {
-                    keyByteCheckedNos.Add(keyByteSet.KeyByteNo);
-
-                    if (keyByteSet.KeyByteNo > maxKeyByteNo)
-                    {
-                        maxKeyByteNo = keyByteSet.KeyByteNo;
-                    }
-                }
-                else
-                {
-                    allKeyByteNosDistinct = false;
-                    break;
-                }
-            }
-
-            if (!allKeyByteNosDistinct)
-            {
-                throw new InvalidOperationException("The KeyByteSet array contained at least 1 item with a duplicate KeyByteNo value.");
-            }
-
-            if (maxKeyByteNo != keyByteSets.Length)
-            {
-                throw new InvalidOperationException("The values for KeyByteNo in each KeyByteSet item must be sequential and start with the number 1.");
-            }
-
-            // Note these seed value, with random numbers need to be repeated in check function.
-            // The more of these values the better, but they will also increase the length of the
-            // key by 2 chars each. Changing the length of the key is not something to be done
-            // without testing, since some operations depend on certain portions of the key
-            // being found at specific indexes.
-
-            var keyBytes = new byte[keyByteSets.Length];
-
-            for (int i = 0; i < keyByteSets.Length; i++)
-            {
-                keyBytes[i] = GetKeyByte(
-                                    seed,
-                                    keyByteSets[i].KeyByteA,
-                                    keyByteSets[i].KeyByteB,
-                                    keyByteSets[i].KeyByteC
-                              );
-            }
-
-            // The key string begins with a hexidecimal string of the seed
-
-            string result = seed.ToString("X8"); // 8 digit hex;
-
-            for (int i = 0; i < keyBytes.Length; i++)
-            {
-                result = result + keyBytes[i].ToString("X2");
-            }
-
-            result = result + GetChecksum(result);
-
-            // Insert hyphens every 6 chars for readability
-
-            int startPos = 7;
-
-            while (startPos < (result.Length - 1))
-            {
-                result = result.Insert(startPos, "-");
-
-                startPos = startPos + 7;
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Retrieve the directory path for where the executing assembly resides.
+        ///     Retrieve the directory path for where the executing assembly resides.
         /// </summary>
         private static string AssemblyDirectory
         {
@@ -127,16 +31,13 @@ namespace KeyGenerate
 
             get
             {
-                string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+                var codeBase = Assembly.GetExecutingAssembly().CodeBase;
                 var uri = new UriBuilder(codeBase);
-                string path = Uri.UnescapeDataString(uri.Path);
+                var path = Uri.UnescapeDataString(uri.Path);
 
                 const char folderSeparator = '/';
 
-                if (path.IndexOf(folderSeparator) != -1)
-                {
-                    path = path.Substring(0, path.LastIndexOf(folderSeparator));
-                }
+                if (path.IndexOf(folderSeparator) != -1) path = path.Substring(0, path.LastIndexOf(folderSeparator));
 
                 // Using Path.GetDirectoryName(path); as in the online example was causing me to loose the
                 // debug folder from the path (when using under unit test conditions at least). Using manual
@@ -148,41 +49,120 @@ namespace KeyGenerate
             }
         }
 
+        /// <summary>
+        ///     Generate a new key given a seed value. This seed should be unique so that where licences are blacklisted,
+        ///     we only blacklist one key. Store the seed when generating new licences, or put in place some other mechanism so
+        ///     that
+        ///     the key will not be repeated for the same application. This seed does not necessarily have to be randomised.
+        /// </summary>
+        /// <param name="seed">Random number</param>
+        /// <param name="keyByteSets">A list of key bytes that will be used to produce the key</param>
+        /// <returns></returns>
+        public string MakeKey(int seed, KeyByteSet[] keyByteSets)
+        {
+            if (keyByteSets.Length < 2)
+                throw new InvalidOperationException("The KeyByteSet array must be of length 2 or greater.");
+
+            // Check that array is in correct order as this will cause errors if passed in incorrectly
+
+            Array.Sort(keyByteSets, new KeyByteSetComparer());
+
+            var allKeyByteNosDistinct = true;
+
+            var keyByteCheckedNos = new List<int>();
+
+            var maxKeyByteNo = 0;
+
+            foreach (var keyByteSet in keyByteSets)
+                if (!keyByteCheckedNos.Contains(keyByteSet.KeyByteNo))
+                {
+                    keyByteCheckedNos.Add(keyByteSet.KeyByteNo);
+
+                    if (keyByteSet.KeyByteNo > maxKeyByteNo) maxKeyByteNo = keyByteSet.KeyByteNo;
+                }
+                else
+                {
+                    allKeyByteNosDistinct = false;
+                    break;
+                }
+
+            if (!allKeyByteNosDistinct)
+                throw new InvalidOperationException(
+                    "The KeyByteSet array contained at least 1 item with a duplicate KeyByteNo value.");
+
+            if (maxKeyByteNo != keyByteSets.Length)
+                throw new InvalidOperationException(
+                    "The values for KeyByteNo in each KeyByteSet item must be sequential and start with the number 1.");
+
+            // Note these seed value, with random numbers need to be repeated in check function.
+            // The more of these values the better, but they will also increase the length of the
+            // key by 2 chars each. Changing the length of the key is not something to be done
+            // without testing, since some operations depend on certain portions of the key
+            // being found at specific indexes.
+
+            var keyBytes = new byte[keyByteSets.Length];
+
+            for (var i = 0; i < keyByteSets.Length; i++)
+                keyBytes[i] = GetKeyByte(
+                    seed,
+                    keyByteSets[i].KeyByteA,
+                    keyByteSets[i].KeyByteB,
+                    keyByteSets[i].KeyByteC
+                );
+
+            // The key string begins with a hexidecimal string of the seed
+
+            var result = seed.ToString("X8"); // 8 digit hex;
+
+            for (var i = 0; i < keyBytes.Length; i++) result = result + keyBytes[i].ToString("X2");
+
+            result = result + GetChecksum(result);
+
+            // Insert hyphens every 6 chars for readability
+
+            var startPos = 7;
+
+            while (startPos < result.Length - 1)
+            {
+                result = result.Insert(startPos, "-");
+
+                startPos = startPos + 7;
+            }
+
+            return result;
+        }
+
         ////////////////////////////////////////////////////
         // Code below from here is duplicated across both
         // private and public projects / dlls
         ////////////////////////////////////////////////////
 
         /// <summary>
-        /// Given a seed and some input bytes, generate a single byte to return. This should 
-        /// be used with randomised data, that can be represented to retrieve the same key.
+        ///     Given a seed and some input bytes, generate a single byte to return. This should
+        ///     be used with randomised data, that can be represented to retrieve the same key.
         /// </summary>
         /// <param name="seed"></param>
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <param name="c"></param>
         /// <returns></returns>
-        private byte GetKeyByte(Int64 seed, byte a, byte b, byte c)
+        private byte GetKeyByte(long seed, byte a, byte b, byte c)
         {
-            int aTemp = a % 25;
-            int bTemp = b % 3;
+            var aTemp = a % 25;
+            var bTemp = b % 3;
 
             long result;
 
-            if ((a % 2) == 0)
-            {
+            if (a % 2 == 0)
                 result = ((seed >> aTemp) & 0xFF) ^ ((seed >> bTemp) | c);
-            }
             else
-            {
                 result = ((seed >> aTemp) & 0xFF) ^ ((seed >> bTemp) & c);
-            }
 
-            return (byte)result;
+            return (byte) result;
         }
 
         /// <summary>
-        /// Generate a new checksum for a key
+        ///     Generate a new checksum for a key
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
@@ -192,28 +172,20 @@ namespace KeyGenerate
             ushort right = 0xAF;
 
             if (str.Length > 0)
-            {
                 // 0xFF hex for 255
 
-                for (int cnt = 0; cnt < str.Length; cnt++)
+                for (var cnt = 0; cnt < str.Length; cnt++)
                 {
-                    right = (ushort)(right + Convert.ToByte(str[cnt]));
+                    right = (ushort) (right + Convert.ToByte(str[cnt]));
 
-                    if (right > 0xFF)
-                    {
-                        right -= 0xFF;
-                    }
+                    if (right > 0xFF) right -= 0xFF;
 
                     left += right;
 
-                    if (left > 0xFF)
-                    {
-                        left -= 0xFF;
-                    }
+                    if (left > 0xFF) left -= 0xFF;
                 }
-            }
 
-            ushort sum = (ushort)((left << 8) + right);
+            var sum = (ushort) ((left << 8) + right);
 
             return sum.ToString("X4"); // 4 char hex
         }
