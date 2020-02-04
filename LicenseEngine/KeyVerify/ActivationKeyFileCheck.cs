@@ -62,7 +62,7 @@ namespace KeyVerify
                 var pkvLicenceKeyResult =
                     new KeyCheck().CheckKey(clearTextActivationKey, new[] {keyByteSet1, keyByteSet2}, 8, null);
 
-                if (pkvLicenceKeyResult != LicenceKeyResult.KeyGood)
+                if (pkvLicenceKeyResult != LicenseKeyResult.KeyGood)
                     throw new ActivationKeyInvalidException(string.Format(
                         "The licence key that allows {0} to run is invalid. Please check that the key file exists in the executing directory, and has not been modified.",
                         friendlyApplicationName));

@@ -59,7 +59,7 @@ namespace KeyTest
                                   new[] {keyByteSet1, keyByteSet2, keyByteSet3},
                                   keyByteSets.Length,
                                   null
-                              ) == LicenceKeyResult.KeyGood, "Failed on iteration " + i
+                              ) == LicenseKeyResult.KeyGood, "Failed on iteration " + i
                 );
 
                 // Check that erroneous check sum validation fails
@@ -71,27 +71,27 @@ namespace KeyTest
             Assert.IsFalse(pkvKeyCheck.CheckKey("adcsadrewf",
                                new[] {keyByteSet1, keyByteSet2},
                                keyByteSets.Length,
-                               null) == LicenceKeyResult.KeyGood
+                               null) == LicenseKeyResult.KeyGood
             );
             Assert.IsFalse(pkvKeyCheck.CheckKey("",
                                new[] {keyByteSet1, keyByteSet2},
                                keyByteSets.Length,
-                               null) == LicenceKeyResult.KeyGood
+                               null) == LicenseKeyResult.KeyGood
             );
             Assert.IsFalse(pkvKeyCheck.CheckKey("123",
                                new[] {keyByteSet1, keyByteSet2},
                                keyByteSets.Length,
-                               null) == LicenceKeyResult.KeyGood
+                               null) == LicenseKeyResult.KeyGood
             );
             Assert.IsFalse(pkvKeyCheck.CheckKey("*()",
                                new[] {keyByteSet1, keyByteSet2},
                                keyByteSets.Length,
-                               null) == LicenceKeyResult.KeyGood
+                               null) == LicenseKeyResult.KeyGood
             );
             Assert.IsFalse(pkvKeyCheck.CheckKey("dasdasdasgdjwqidqiwd21887127eqwdaishxckjsabcxjkabskdcbq2e81y12e8712",
                                new[] {keyByteSet1, keyByteSet2},
                                keyByteSets.Length,
-                               null) == LicenceKeyResult.KeyGood
+                               null) == LicenseKeyResult.KeyGood
             );
         }
 
@@ -152,7 +152,7 @@ namespace KeyTest
                                   new[] {keyByteSet1, keyByteSet2},
                                   keyByteSets.Length,
                                   null
-                              ) == LicenceKeyResult.KeyGood, "Failed on iteration " + i
+                              ) == LicenseKeyResult.KeyGood, "Failed on iteration " + i
                 );
             }
         }

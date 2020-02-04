@@ -26,7 +26,7 @@ namespace KeyVerify
         /// <param name="totalKeyByteSets">The total number of KeyBytes used to make the key</param>
         /// <param name="blackListedSeeds">Any seed values (hex string representation) that should be banned</param>
         /// <returns></returns>
-        public LicenceKeyResult CheckKey(
+        public LicenseKeyResult CheckKey(
             string key,
             KeyByteSet[] keyByteSetsToCheck,
             int totalKeyByteSets,
@@ -35,7 +35,7 @@ namespace KeyVerify
         {
             key = FormatKeyForCompare(key);
 
-            var result = LicenceKeyResult.KeyInvalid;
+            var result = LicenseKeyResult.KeyInvalid;
 
             var checksumPass = CheckKeyChecksum(key, totalKeyByteSets);
 
@@ -51,9 +51,9 @@ namespace KeyVerify
 
                     for (var i = 0; i < blackListedSeeds.Length; i++)
                         if (key.StartsWith(blackListedSeeds[i]))
-                            result = LicenceKeyResult.KeyBlackListed;
+                            result = LicenseKeyResult.KeyBlackListed;
 
-                if (result != LicenceKeyResult.KeyBlackListed)
+                if (result != LicenseKeyResult.KeyBlackListed)
                 {
                     // At this point, the key is either valid or forged,
                     // because a forged key can have a valid checksum.
@@ -72,7 +72,7 @@ namespace KeyVerify
                     // MATCH the values that PKV_MakeKey uses to make the key in the
                     // first place!
 
-                    result = LicenceKeyResult.KeyPhoney;
+                    result = LicenseKeyResult.KeyPhoney;
 
                     int seed;
 
@@ -109,7 +109,7 @@ namespace KeyVerify
                                 return result; // Return result in failed state 
                         }
 
-                        result = LicenceKeyResult.KeyGood;
+                        result = LicenseKeyResult.KeyGood;
                     }
                 }
             }

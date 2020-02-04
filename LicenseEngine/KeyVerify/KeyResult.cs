@@ -1,6 +1,6 @@
 ﻿namespace KeyVerify
 {
-    public enum LicenceKeyResult
+    public enum LicenseKeyResult
     {
         KeyGood = 0,
         KeyInvalid = 1,
