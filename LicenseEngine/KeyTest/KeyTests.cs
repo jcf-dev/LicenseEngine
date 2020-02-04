@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace KeyTest
 {
     [TestClass]
-    public class KeyTesting
+    public class KeyTests
     {
         [TestMethod]
         public void Test_pkv_licence_key_generation_and_verification()
@@ -50,30 +50,26 @@ namespace KeyTest
                 key = pkvLicenceKey.MakeKey(seed, keyByteSets);
 
                 // Check that check sum validation passes
-
                 Assert.IsTrue(pkvKeyCheck.CheckKeyChecksum(key, keyByteSets.Length));
 
                 // Check using full check method
-
                 Assert.IsTrue(pkvKeyCheck.CheckKey(
-                                            key,
-                                            new[] { keyByteSet1, keyByteSet2, keyByteSet3 },
-                                            keyByteSets.Length,
-                                            null
-                                        ) == LicenceKeyResult.KeyGood, "Failed on iteration " + i
+                                  key,
+                                  new[] { keyByteSet1, keyByteSet2, keyByteSet3 },
+                                  keyByteSets.Length,
+                                  null
+                              ) == LicenceKeyResult.KeyGood, "Failed on iteration " + i
                             );
 
                 // Check that erroneous check sum validation fails
-
                 Assert.IsFalse(pkvKeyCheck.CheckKeyChecksum(key.Remove(23, 1) + "A", keyByteSets.Length)); // Change key by replacing 17th char
             }
 
             // Check a few random inputs
-
             Assert.IsFalse(pkvKeyCheck.CheckKey("adcsadrewf",
-                                            new[] { keyByteSet1, keyByteSet2 },
-                                            keyByteSets.Length,
-                                            null) == LicenceKeyResult.KeyGood
+                               new[] { keyByteSet1, keyByteSet2 },
+                               keyByteSets.Length,
+                               null) == LicenceKeyResult.KeyGood
                         );
             Assert.IsFalse(pkvKeyCheck.CheckKey("",
                                             new[] { keyByteSet1, keyByteSet2 },
