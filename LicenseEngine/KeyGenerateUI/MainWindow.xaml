@@ -17,7 +17,8 @@
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
             <Button x:Name="BtnHelp"
-                    Click="BtnHelp_OnClick">
+                    Click="BtnHelp_OnClick"
+                    Cursor="Hand">
                 <StackPanel Orientation="Horizontal">
                     <iconPacks:PackIconModern Width="15"
                                               Height="15"
@@ -27,6 +28,10 @@
                                Text="Help" />
                 </StackPanel>
             </Button>
+            <Button>
+                <TextBlock Text="v1.0.0" />
+            </Button>
+
         </controls:WindowCommands>
     </controls:MetroWindow.RightWindowCommands>
     <Grid>

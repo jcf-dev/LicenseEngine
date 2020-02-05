@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using KeyCommon;
 using KeyGenerate;
 using MahApps.Metro.Controls;
@@ -17,9 +18,12 @@ namespace KeyGenerateUI
 
         private void BtnGenerate_Click(object sender, RoutedEventArgs e)
         {
-            TxtLicense.Text = int.TryParse(TxtProdID.Text, out var ID) ? GenerateKey(ID) : "ERROR: Product ID must be an integer.";
+            var prodID = TxtProdID.Text;
+            TxtLicense.Text = prodID != ""
+                ? int.TryParse(prodID, out var ID) ? GenerateKey(ID) : "ERROR: Product ID must be an integer."
+                : "ERROR: Please provide a Product ID Integer.";
         }
-            
+
         private string GenerateKey(int ID)
         {
             var keyGenerator = new KeyGenerator();
@@ -48,7 +52,7 @@ namespace KeyGenerateUI
 
         private void BtnHelp_OnClick(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/joweenflores/LicenseEngine");
+            Process.Start("https://github.com/joweenflores/LicenseEngine");
         }
     }
 }

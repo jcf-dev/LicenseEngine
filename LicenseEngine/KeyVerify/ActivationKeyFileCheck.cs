@@ -39,7 +39,7 @@ namespace KeyVerify
 
             if (!string.IsNullOrEmpty(activationKeyEncrypted))
             {
-                var clearTextActivationKey = string.Empty;
+                string clearTextActivationKey;
 
                 try
                 {
